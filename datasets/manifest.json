@@ -1,0 +1,26 @@
+{
+  "dataset_type": "synthetic_fictional_retail_data",
+  "seed": 20261117,
+  "row_counts_excluding_headers": {
+    "customers.csv": 2000,
+    "products.csv": 500,
+    "orders.csv": 10000,
+    "order_items.csv": 25000,
+    "payments.csv": 10000,
+    "inventory.csv": 1500
+  },
+  "total_rows_excluding_headers": 49000,
+  "validation": {
+    "unique_customer_ids": true,
+    "unique_product_ids": true,
+    "unique_order_ids": true,
+    "unique_payment_ids": true,
+    "all_order_customers_exist": true,
+    "all_order_items_orders_exist": true,
+    "all_order_items_products_exist": true,
+    "all_payment_orders_exist": true,
+    "all_inventory_products_exist": true,
+    "exactly_one_payment_per_order": true,
+    "exactly_three_inventory_rows_per_product": true
+  }
+}

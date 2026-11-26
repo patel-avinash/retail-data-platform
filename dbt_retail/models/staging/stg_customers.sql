@@ -18,8 +18,28 @@ cleaned_data AS (
 
     FROM source_data
 
+),
+
+deduplicated AS (
+
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY CUSTOMER_ID
+            ORDER BY INGESTED_AT DESC NULLS LAST
+        ) AS rn
+
+    FROM cleaned_data
+
 )
 
-SELECT 
-    * 
-FROM cleaned_data
+SELECT
+    CUSTOMER_ID,
+    CUSTOMER_NAME,
+    CITY,
+    EMAIL,
+    STATUS,
+    INGESTED_AT
+
+FROM deduplicated
+WHERE rn = 1

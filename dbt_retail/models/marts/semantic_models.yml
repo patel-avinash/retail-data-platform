@@ -1,0 +1,106 @@
+
+version: 2
+
+models:
+  # Main retail sales semantic model
+  - name: fact_order_items
+    description: >
+      Retail sales fact table containing one row per product
+      within an order.
+
+    semantic_model:
+      enabled: true
+      name: retail_sales
+
+    agg_time_dimension: order_date
+
+    columns:
+      - name: ORDER_ITEM_KEY
+        description: Unique order item identifier.
+        entity:
+          type: primary
+          name: order_item
+
+      - name: ORDER_ID
+        description: Business order identifier.
+        entity:
+          type: foreign
+          name: order
+
+      - name: CUSTOMER_KEY
+        description: Customer dimension key.
+        entity:
+          type: foreign
+          name: customer
+
+      - name: PRODUCT_KEY
+        description: Product dimension key.
+        entity:
+          type: foreign
+          name: product
+
+      - name: DATE_KEY
+        description: Date dimension key.
+        entity:
+          type: foreign
+          name: date
+
+      - name: ORDER_DATE
+        description: Date on which the order was placed.
+        granularity: day
+        dimension:
+          type: time
+          name: order_date
+
+      - name: ORDER_STATUS
+        description: Order status.
+        dimension:
+          type: categorical
+          name: order_status
+
+    metrics:
+      - name: total_revenue
+        description: Total retail sales revenue.
+        type: simple
+        label: Total Revenue
+        agg: sum
+        expr: TOTAL_REVENUE
+
+      - name: total_profit
+        description: Total profit from sales.
+        type: simple
+        label: Total Profit
+        agg: sum
+        expr: TOTAL_PROFIT
+
+      - name: total_cost
+        description: Total cost of sold products.
+        type: simple
+        label: Total Cost
+        agg: sum
+        expr: TOTAL_COST
+
+      - name: units_sold
+        description: Total quantity of products sold.
+        type: simple
+        label: Units Sold
+        agg: sum
+        expr: QUANTITY
+
+      - name: total_orders
+        description: Distinct number of orders.
+        type: simple
+        label: Total Orders
+        agg: count_distinct
+        expr: ORDER_ID
+
+  # Existing date dimension registered as MetricFlow time spine
+  - name: dim_date
+    description: Daily calendar dimension used as the MetricFlow time spine.
+
+    time_spine:
+      standard_granularity_column: FULL_DATE
+
+    columns:
+      - name: FULL_DATE
+        granularity: day

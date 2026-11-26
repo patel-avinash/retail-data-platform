@@ -1,0 +1,188 @@
+
+version: 2
+
+models:
+
+  - name: stg_customers
+    description: "Cleaned and standardized customer information."
+    columns:
+      - name: CUSTOMER_ID
+        description: "Unique identifier for each customer."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: CUSTOMER_NAME
+        description: "Customer name after trimming spaces."
+        data_tests:
+          - not_null
+
+      - name: EMAIL
+        description: "Customer email address in lowercase."
+
+      - name: CITY
+        description: "Standardized customer city."
+
+      - name: STATUS
+        description: "Customer account status."
+
+      - name: INGESTED_AT
+        description: "Timestamp when the source data was ingested into Snowflake RAW."  
+
+  - name: stg_products
+    description: "Cleaned product information with unit profit calculation."
+    columns:
+      - name: PRODUCT_ID
+        description: "Unique identifier for each product."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: CATEGORY
+        description: "Standardized product category."
+
+      - name: PRICE
+        description: "Product selling price."
+
+      - name: COST
+        description: "Product cost."
+
+      - name: PROFIT_PER_UNIT
+        description: "Selling price minus product cost."
+
+      - name: INGESTED_AT
+        description: "Timestamp when the source data was ingested into Snowflake RAW."  
+
+
+  - name: stg_orders
+    description: "Cleaned customer order information."
+    columns:
+      - name: ORDER_ID
+        description: "Unique identifier for each order."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: CUSTOMER_ID
+        description: "Customer who placed the order."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: CUSTOMER_ID
+
+      - name: ORDER_DATE
+        description: "Date when the order was placed."
+
+      - name: ORDER_STATUS
+        description: "Standardized order status."
+
+      - name: INGESTED_AT
+        description: "Timestamp when the source data was ingested into Snowflake RAW."  
+
+      - name: STATUS
+        description: "Standardized order status."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - PLACED
+                  - PROCESSING
+                  - SHIPPED
+                  - DELIVERED
+                  - CANCELLED
+                  - RETURNED
+
+
+  - name: stg_order_items
+    description: "Cleaned order line items with calculated line totals."
+    columns:
+      - name: ORDER_ID
+        description: "Identifier of the associated order."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: ORDER_ID
+
+      - name: PRODUCT_ID
+        description: "Identifier of the ordered product."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: PRODUCT_ID
+
+      - name: QUANTITY
+        description: "Number of units ordered."
+        data_tests:
+          - not_null
+
+      - name: UNIT_PRICE
+        description: "Price per unit at the time of ordering."
+
+      - name: LINE_TOTAL
+        description: "Quantity multiplied by unit price."
+
+      - name: INGESTED_AT
+        description: "Timestamp when the source data was ingested into Snowflake RAW."  
+
+
+  - name: stg_payments
+    description: "Cleaned payment transaction information."
+    columns:
+      - name: PAYMENT_ID
+        description: "Unique identifier for each payment."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: ORDER_ID
+        description: "Order associated with the payment."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: ORDER_ID
+
+      - name: PAYMENT_STATUS
+        description: "Standardized payment status."
+
+      - name: AMOUNT
+        description: "Payment amount."
+
+      - name: INGESTED_AT
+        description: "Timestamp when the source data was ingested into Snowflake RAW."  
+
+
+  - name: stg_inventory
+    description: "Inventory quantities by product and warehouse."
+    columns:
+      - name: PRODUCT_ID
+        description: "Identifier of the inventory product."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: PRODUCT_ID
+
+      - name: WAREHOUSE_ID
+        description: "Identifier of the warehouse."
+        data_tests:
+          - not_null
+
+      - name: STOCK_QUANTITY
+        description: "Available stock quantity."
+        data_tests:
+          - not_null
+
+      - name: INGESTED_AT
+        description: "Timestamp when the source data was ingested into Snowflake RAW."  
+
+       
+          

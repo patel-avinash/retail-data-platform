@@ -1,0 +1,28 @@
+customer_id,name,city,email,status
+CUST02001,Day One Customer 01,Lucknow,cust02001@example.com,ACTIVE
+CUST02002,Day One Customer 02,Kolkata,cust02002@example.com,ACTIVE
+CUST02003,Day One Customer 03,Delhi,cust02003@example.com,ACTIVE
+CUST02004,Day One Customer 04,Mumbai,cust02004@example.com,ACTIVE
+CUST02005,Day One Customer 05,Jaipur,cust02005@example.com,ACTIVE
+CUST02006,Day One Customer 06,Mumbai,cust02006@example.com,ACTIVE
+CUST02007,Day One Customer 07,Lucknow,cust02007@example.com,ACTIVE
+CUST02008,Day One Customer 08,Ahmedabad,cust02008@example.com,ACTIVE
+CUST02009,Day One Customer 09,Ahmedabad,cust02009@example.com,ACTIVE
+CUST02010,Day One Customer 10,Mumbai,cust02010@example.com,ACTIVE
+CUST02011,Day One Customer 11,Jaipur,cust02011@example.com,ACTIVE
+CUST02012,Day One Customer 12,Pune,cust02012@example.com,ACTIVE
+CUST02013,Day One Customer 13,Ahmedabad,cust02013@example.com,ACTIVE
+CUST02014,Day One Customer 14,Chennai,cust02014@example.com,ACTIVE
+CUST02015,Day One Customer 15,Jaipur,cust02015@example.com,ACTIVE
+CUST02016,Day One Customer 16,Kochi,cust02016@example.com,ACTIVE
+CUST02017,Day One Customer 17,Nagpur,cust02017@example.com,ACTIVE
+CUST02018,Day One Customer 18,Kochi,cust02018@example.com,ACTIVE
+CUST02019,Day One Customer 19,Delhi,cust02019@example.com,ACTIVE
+CUST02020,Day One Customer 20,Mumbai,cust02020@example.com,ACTIVE
+CUST00001,Rahul Joshi,Indore,customer00001@example.com,ACTIVE
+CUST00002,Reyansh Malhotra,Hyderabad,customer00002@example.com,INACTIVE
+CUST00003,Krishna Kapoor,Jaipur,customer00003@example.com,ACTIVE
+CUST00004,Pooja Khan,Lucknow,customer00004@example.com,ACTIVE
+CUST00005,Amit Khan,Pune,customer00005@example.com,ACTIVE
+CUST02001,Day One Customer 01,Lucknow,cust02001@example.com,ACTIVE
+CUST02002,Day One Customer 02,Kolkata,cust02002@example.com,ACTIVE

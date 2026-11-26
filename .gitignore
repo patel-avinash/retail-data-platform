@@ -6,3 +6,8 @@ __pycache__/
 target/
 dbt_packages/
 logs/
+# Credentials and private keys
+*.pem
+*.p8
+*.key
+secrets/

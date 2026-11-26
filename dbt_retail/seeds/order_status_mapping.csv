@@ -1,0 +1,7 @@
+ORDER_STATUS,STATUS_DESCRIPTION,IS_FINAL_STATUS
+PLACED,Order has been placed,FALSE
+PROCESSING,Order is being processed,FALSE
+SHIPPED,Order has been shipped,FALSE
+DELIVERED,Order successfully delivered,TRUE
+CANCELLED,Order was cancelled,TRUE
+RETURNED,Order was returned,TRUE

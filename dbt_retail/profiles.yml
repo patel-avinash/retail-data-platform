@@ -1,0 +1,14 @@
+
+dbt_retail:
+  target: ci
+  outputs:
+    ci:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: DBT_DEVELOPER
+      warehouse: COMPUTE_WH
+      database: RETAIL_DEV
+      schema: CI
+      threads: 4

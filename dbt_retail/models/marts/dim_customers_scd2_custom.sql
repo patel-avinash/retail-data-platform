@@ -51,7 +51,6 @@ WITH source_data AS (
         ) AS HASH_VALUE
 
     FROM {{ ref('stg_customers') }}
-
 ),
 
 

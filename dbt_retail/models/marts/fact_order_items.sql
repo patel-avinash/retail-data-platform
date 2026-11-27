@@ -47,6 +47,38 @@ joined_data AS (
 
 ),
 
+customer_versions AS (
+
+    SELECT
+        dc.*,
+        civ.EFFECTIVE_FROM AS INITIAL_EFFECTIVE_FROM,
+
+        ROW_NUMBER() OVER (
+            PARTITION BY dc.CUSTOMER_ID
+            ORDER BY dc.EFFECTIVE_FROM, dc.CUSTOMER_KEY
+        ) AS VERSION_NUMBER
+
+    FROM {{ ref('dim_customers_scd2_custom') }} dc
+
+    LEFT JOIN {{ ref('customer_initial_validity') }} civ
+        ON dc.CUSTOMER_ID = civ.CUSTOMER_ID
+
+),
+
+customer_validity AS (
+
+    SELECT
+        *,
+        CASE
+            WHEN VERSION_NUMBER = 1
+                THEN COALESCE(INITIAL_EFFECTIVE_FROM, EFFECTIVE_FROM)
+            ELSE EFFECTIVE_FROM
+        END AS MATCH_EFFECTIVE_FROM
+
+    FROM customer_versions
+
+),
+
 final AS (
 
     SELECT
@@ -81,10 +113,10 @@ final AS (
 
     FROM joined_data jd
 
-    INNER JOIN {{ ref('dim_customers_scd2_custom') }} dc
-    ON jd.CUSTOMER_ID = dc.CUSTOMER_ID
-    AND jd.ORDER_DATE >= TO_DATE(dc.EFFECTIVE_FROM)
-    AND jd.ORDER_DATE < TO_DATE(dc.EFFECTIVE_TO)
+    INNER JOIN customer_validity dc
+        ON jd.CUSTOMER_ID = dc.CUSTOMER_ID
+        AND jd.ORDER_DATE >= TO_DATE(dc.MATCH_EFFECTIVE_FROM)
+        AND jd.ORDER_DATE < TO_DATE(dc.EFFECTIVE_TO)
 
     INNER JOIN {{ ref('dim_products') }} dp
         ON jd.PRODUCT_ID = dp.PRODUCT_ID

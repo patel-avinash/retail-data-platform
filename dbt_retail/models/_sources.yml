@@ -5,7 +5,7 @@ sources:
   - name: retail_raw
     description: "Raw retail data ingested from CSV files into Snowflake."
 
-    database: "{{ target_database }}"
+    database: "{{ env_var('SNOWFLAKE_DATABASE') }}"
     schema: RAW
 
     config:

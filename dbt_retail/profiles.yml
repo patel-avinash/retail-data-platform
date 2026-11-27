@@ -12,3 +12,14 @@ dbt_retail:
       database: RETAIL_DEV
       schema: CI
       threads: 4
+
+    prod:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: DBT_PROD_DEPLOYER
+      warehouse: COMPUTE_WH
+      database: RETAIL_PROD
+      schema: STAGING
+      threads: 4

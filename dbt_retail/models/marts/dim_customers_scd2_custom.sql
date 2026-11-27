@@ -21,8 +21,7 @@
                         ),
                         256
                     ) AS HASH_VALUE
-                FROM RETAIL_DEV.STAGING.TEST_STG_CUSTOMERS
-            ) AS source
+                    FROM {{ ref('stg_customers') }}            ) AS source
             WHERE target.CUSTOMER_ID = source.CUSTOMER_ID
               AND target.IS_CURRENT = TRUE
               AND target.HASH_VALUE <> source.HASH_VALUE
@@ -51,7 +50,7 @@ WITH source_data AS (
             256
         ) AS HASH_VALUE
 
-    FROM RETAIL_DEV.STAGING.TEST_STG_CUSTOMERS
+    FROM {{ ref('stg_customers') }}
 
 ),
 

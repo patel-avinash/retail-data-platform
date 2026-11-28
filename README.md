@@ -6,7 +6,7 @@ Raw CSV files (customers, products, orders, order items, payments, inventory) ar
 
 > **Author:** Avinash Patel ([@patel-avinash](https://github.com/patel-avinash))
 
-![Retail sales dashboard](dashboards/retail_dashboard.png)
+![Retail sales dashboard](dashboards/retail_sales_dashboard.png)
 
 *Tableau dashboard built on the Snowflake MART layer: revenue, profit and order KPIs, monthly trend, order status and category sales.*
 

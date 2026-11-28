@@ -1,0 +1,304 @@
+-- Check current Snowflake session details
+SELECT
+    CURRENT_USER()      AS USER_NAME,
+    CURRENT_ROLE()      AS CURRENT_ROLE,
+    CURRENT_WAREHOUSE() AS CURRENT_WAREHOUSE,
+    CURRENT_DATABASE()  AS CURRENT_DATABASE,
+    CURRENT_SCHEMA()    AS CURRENT_SCHEMA;
+
+
+-- Create development database
+CREATE DATABASE IF NOT EXISTS RETAIL_DEV
+COMMENT = 'Development database for Retail Sales Data Warehouse';
+
+-- Create production database
+CREATE DATABASE IF NOT EXISTS RETAIL_PROD
+COMMENT = 'Production database for Retail Sales Data Warehouse';
+
+-- Display our project databases
+SHOW DATABASES LIKE 'RETAIL%';
+
+
+-- Select development database
+USE DATABASE RETAIL_DEV;
+
+-- Create RAW schema
+CREATE SCHEMA IF NOT EXISTS RAW
+COMMENT = 'Stores raw source data';
+
+-- Create STAGING schema
+CREATE SCHEMA IF NOT EXISTS STAGING
+COMMENT = 'Stores cleaned and transformed data';
+
+-- Create MART schema
+CREATE SCHEMA IF NOT EXISTS MART
+COMMENT = 'Stores business-ready fact and dimension tables';
+
+
+-- Select production database
+USE DATABASE RETAIL_PROD;
+
+-- Create RAW schema
+CREATE SCHEMA IF NOT EXISTS RAW
+COMMENT = 'Stores raw source data';
+
+-- Create STAGING schema
+CREATE SCHEMA IF NOT EXISTS STAGING
+COMMENT = 'Stores cleaned and transformed data';
+
+-- Create MART schema
+CREATE SCHEMA IF NOT EXISTS MART
+COMMENT = 'Stores business-ready fact and dimension tables';
+
+
+-- Verify development schemas
+SHOW SCHEMAS IN DATABASE RETAIL_DEV;
+
+-- Verify production schemas
+SHOW SCHEMAS IN DATABASE RETAIL_PROD;
+
+
+-- Check existing virtual warehouses
+SHOW WAREHOUSES LIKE '%WH%';
+
+
+-- Inspect existing warehouse configuration
+DESCRIBE WAREHOUSE COMPUTE_WH;
+
+SHOW WAREHOUSES LIKE 'COMPUTE_WH';
+
+
+-- Select our existing warehouse
+USE WAREHOUSE COMPUTE_WH;
+
+-- Select development database
+USE DATABASE RETAIL_DEV;
+
+-- Check warehouse execution
+SELECT
+    CURRENT_WAREHOUSE() AS WAREHOUSE_NAME,
+    CURRENT_DATABASE() AS DATABASE_NAME,
+    CURRENT_ROLE() AS ROLE_NAME;
+
+
+-- Create Data Engineer role
+CREATE ROLE IF NOT EXISTS DATA_ENGINEER
+COMMENT = 'Role for data engineering operations';
+
+-- Create dbt Developer role
+CREATE ROLE IF NOT EXISTS DBT_DEVELOPER
+COMMENT = 'Role for dbt development and transformations';
+
+-- Create BI Analyst role
+CREATE ROLE IF NOT EXISTS BI_ANALYST
+COMMENT = 'Role for business intelligence and analytics';
+
+
+-- Grant child roles to SYSADMIN
+GRANT ROLE DATA_ENGINEER TO ROLE SYSADMIN;
+
+GRANT ROLE DBT_DEVELOPER TO ROLE SYSADMIN;
+
+GRANT ROLE BI_ANALYST TO ROLE SYSADMIN;
+
+--verify
+SHOW ROLES LIKE 'DATA_ENGINEER';
+SHOW ROLES LIKE 'DBT_DEVELOPER';
+SHOW ROLES LIKE 'BI_ANALYST';
+
+-- Grant warehouse access
+-- All three roles need to execute queries using COMPUTE_WH.
+-- Switch to ACCOUNTADMIN and execute:
+
+-- Warehouse access
+GRANT USAGE ON WAREHOUSE COMPUTE_WH
+TO ROLE DATA_ENGINEER;
+
+GRANT USAGE ON WAREHOUSE COMPUTE_WH
+TO ROLE DBT_DEVELOPER;
+
+GRANT USAGE ON WAREHOUSE COMPUTE_WH
+TO ROLE BI_ANALYST;
+
+-- Grant database access
+-- All three roles need access to the development database
+
+
+-- Database access
+GRANT USAGE ON DATABASE RETAIL_DEV
+TO ROLE DATA_ENGINEER;
+
+GRANT USAGE ON DATABASE RETAIL_DEV
+TO ROLE DBT_DEVELOPER;
+
+GRANT USAGE ON DATABASE RETAIL_DEV
+TO ROLE BI_ANALYST;
+
+-- Grant schema access
+-- Now we give each role access to the appropriate schemas.
+
+-- DATA_ENGINEER: RAW access
+GRANT USAGE ON SCHEMA RETAIL_DEV.RAW
+TO ROLE DATA_ENGINEER;
+
+-- DBT_DEVELOPER: RAW, STAGING and MART access
+GRANT USAGE ON SCHEMA RETAIL_DEV.RAW
+TO ROLE DBT_DEVELOPER;
+
+GRANT USAGE ON SCHEMA RETAIL_DEV.STAGING
+TO ROLE DBT_DEVELOPER;
+
+GRANT USAGE ON SCHEMA RETAIL_DEV.MART
+TO ROLE DBT_DEVELOPER;
+
+-- BI_ANALYST: MART access only
+GRANT USAGE ON SCHEMA RETAIL_DEV.MART
+TO ROLE BI_ANALYST;
+
+-- Verify the grants
+
+-- Verify warehouse privileges
+SHOW GRANTS ON WAREHOUSE COMPUTE_WH;
+
+-- Verify database privileges
+SHOW GRANTS ON DATABASE RETAIL_DEV;
+
+-- Verify RAW schema privileges
+SHOW GRANTS ON SCHEMA RETAIL_DEV.RAW;
+
+-- Verify STAGING schema privileges
+SHOW GRANTS ON SCHEMA RETAIL_DEV.STAGING;
+
+-- Verify MART schema privileges
+SHOW GRANTS ON SCHEMA RETAIL_DEV.MART;
+
+-- Table-level privileges
+-- DATA_ENGINEER permissions
+
+-- Allow creating raw tables
+GRANT CREATE TABLE
+ON SCHEMA RETAIL_DEV.RAW
+TO ROLE DATA_ENGINEER;
+
+-- Allow creating stages
+GRANT CREATE STAGE
+ON SCHEMA RETAIL_DEV.RAW
+TO ROLE DATA_ENGINEER;
+
+-- Allow creating file formats
+GRANT CREATE FILE FORMAT
+ON SCHEMA RETAIL_DEV.RAW
+TO ROLE DATA_ENGINEER;
+
+-- DBT_DEVELOPER permissions
+
+-- Read existing RAW tables
+GRANT SELECT ON ALL TABLES IN SCHEMA RETAIL_DEV.RAW
+TO ROLE DBT_DEVELOPER;
+
+-- Read future RAW tables
+GRANT SELECT ON FUTURE TABLES IN SCHEMA RETAIL_DEV.RAW
+TO ROLE DBT_DEVELOPER;
+
+-- Create transformation tables and views
+GRANT CREATE TABLE, CREATE VIEW
+ON SCHEMA RETAIL_DEV.STAGING
+TO ROLE DBT_DEVELOPER;
+
+GRANT CREATE TABLE, CREATE VIEW
+ON SCHEMA RETAIL_DEV.MART
+TO ROLE DBT_DEVELOPER;
+
+-- BI_ANALYST permissions
+
+-- Read existing MART tables
+GRANT SELECT ON ALL TABLES IN SCHEMA RETAIL_DEV.MART
+TO ROLE BI_ANALYST;
+
+-- Read future MART tables
+GRANT SELECT ON FUTURE TABLES IN SCHEMA RETAIL_DEV.MART
+TO ROLE BI_ANALYST;
+
+-- Read existing MART views
+GRANT SELECT ON ALL VIEWS IN SCHEMA RETAIL_DEV.MART
+TO ROLE BI_ANALYST;
+
+-- Read future MART views
+GRANT SELECT ON FUTURE VIEWS IN SCHEMA RETAIL_DEV.MART
+TO ROLE BI_ANALYST;
+
+-- Test our security policy
+-- We'll test the BI_ANALYST role
+USE ROLE BI_ANALYST;
+
+SELECT CURRENT_ROLE();
+
+SHOW TABLES IN SCHEMA RETAIL_DEV.RAW;
+
+SHOW TABLES IN SCHEMA RETAIL_DEV.MART;
+
+USE ROLE SYSADMIN;
+
+SHOW GRANTS ON SCHEMA RETAIL_DEV.RAW;
+
+USE ROLE SYSADMIN;
+
+CREATE TABLE RETAIL_DEV.RAW.RBAC_TEST (
+    ID NUMBER,
+    CUSTOMER_NAME VARCHAR(100)
+);
+
+INSERT INTO RETAIL_DEV.RAW.RBAC_TEST
+VALUES (1, 'Test Customer');
+
+-- switch to BI_ANALYST:
+USE ROLE BI_ANALYST;
+
+SELECT *
+FROM RETAIL_DEV.RAW.RBAC_TEST;
+
+
+-- Disable all secondary roles
+USE SECONDARY ROLES NONE;
+
+-- Verify primary role
+SELECT CURRENT_ROLE();
+
+-- Try reading RAW again
+SELECT *
+FROM RETAIL_DEV.RAW.RBAC_TEST;
+
+-- Now test DBT_DEVELOPER
+USE ROLE DBT_DEVELOPER;
+
+USE SECONDARY ROLES NONE;
+
+SELECT CURRENT_ROLE();
+
+SELECT *
+FROM RETAIL_DEV.RAW.RBAC_TEST;
+
+-- Test BI_ANALYST access to MART
+USE ROLE SYSADMIN;
+
+CREATE TABLE RETAIL_DEV.MART.RBAC_MART_TEST (
+    ID NUMBER,
+    TOTAL_REVENUE NUMBER(10,2)
+);
+
+INSERT INTO RETAIL_DEV.MART.RBAC_MART_TEST
+VALUES (1, 50000.00);
+
+-- Now switch to BI_ANALYST:
+USE ROLE BI_ANALYST;
+
+USE SECONDARY ROLES NONE;
+
+SELECT *
+FROM RETAIL_DEV.MART.RBAC_MART_TEST;
+
+-- cleanup
+USE ROLE SYSADMIN;
+
+DROP TABLE RETAIL_DEV.RAW.RBAC_TEST;
+DROP TABLE RETAIL_DEV.MART.RBAC_MART_TEST;
